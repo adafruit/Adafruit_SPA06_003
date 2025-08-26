@@ -55,3 +55,4 @@ output.txt
 
 # Claude Code development files
 CLAUDE.md
+.claude/
