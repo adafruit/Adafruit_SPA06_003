@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(arduino-cli lib examples:*)",
+      "Bash(arduino-cli compile:*)",
+      "Bash(arduino-cli upload:*)",
+      "Bash(arduino-cli board:*)",
+      "Bash(git init:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(\"/c/Program Files/TortoiseGit/bin/puttygen\" \"C:\\Users\\ladyada\\Dropbox\\shared\\github.ppk\" -O private-openssh -o ~/.ssh/id_rsa)",
+      "Bash(python3:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
