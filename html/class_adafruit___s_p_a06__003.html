@@ -177,6 +177,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aaf56164bc5e5108be3603b20feb28180"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___s_p_a06__003.html#aaf56164bc5e5108be3603b20feb28180">readPressure</a> ()</td></tr>
 <tr class="memdesc:aaf56164bc5e5108be3603b20feb28180"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads compensated pressure value in hectopascals.  <a href="#aaf56164bc5e5108be3603b20feb28180">More...</a><br /></td></tr>
 <tr class="separator:aaf56164bc5e5108be3603b20feb28180"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9bd1323952aeaf91783db85110d6d9b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___s_p_a06__003.html#ae9bd1323952aeaf91783db85110d6d9b">calculateTemperature</a> (uint32_t raw_temp)</td></tr>
+<tr class="memdesc:ae9bd1323952aeaf91783db85110d6d9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates compensated temperature from raw data.  <a href="#ae9bd1323952aeaf91783db85110d6d9b">More...</a><br /></td></tr>
+<tr class="separator:ae9bd1323952aeaf91783db85110d6d9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f032781f8c0c5f3d70d65cb55bc902c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___s_p_a06__003.html#a7f032781f8c0c5f3d70d65cb55bc902c">calculatePressure</a> (uint32_t raw_pres, uint32_t raw_temp)</td></tr>
+<tr class="memdesc:a7f032781f8c0c5f3d70d65cb55bc902c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates compensated pressure from raw data.  <a href="#a7f032781f8c0c5f3d70d65cb55bc902c">More...</a><br /></td></tr>
+<tr class="separator:a7f032781f8c0c5f3d70d65cb55bc902c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afed11d2e0e314b371c3e083de6bc5f38"><td class="memItemLeft" align="right" valign="top">Adafruit_Sensor *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___s_p_a06__003.html#afed11d2e0e314b371c3e083de6bc5f38">getTemperatureSensor</a> ()</td></tr>
 <tr class="memdesc:afed11d2e0e314b371c3e083de6bc5f38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Adafruit_Sensor object for temperature readings.  <a href="#afed11d2e0e314b371c3e083de6bc5f38">More...</a><br /></td></tr>
 <tr class="separator:afed11d2e0e314b371c3e083de6bc5f38"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -979,6 +985,71 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reads compensated pressure value in hectopascals. </p>
+<dl class="section return"><dt>Returns</dt><dd>Pressure in hectopascals (hPa) </dd></dl>
+
+</div>
+</div>
+<a id="ae9bd1323952aeaf91783db85110d6d9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9bd1323952aeaf91783db85110d6d9b">&#9670;&nbsp;</a></span>calculateTemperature()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Adafruit_SPA06_003::calculateTemperature </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>raw_temp</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculates compensated temperature from raw data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">raw_temp</td><td>Raw 24-bit temperature data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Temperature in degrees Celsius </dd></dl>
+
+</div>
+</div>
+<a id="a7f032781f8c0c5f3d70d65cb55bc902c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f032781f8c0c5f3d70d65cb55bc902c">&#9670;&nbsp;</a></span>calculatePressure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Adafruit_SPA06_003::calculatePressure </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>raw_pres</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>raw_temp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculates compensated pressure from raw data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">raw_pres</td><td>Raw 24-bit pressure data </td></tr>
+    <tr><td class="paramname">raw_temp</td><td>Raw 24-bit temperature data (for compensation) </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>Pressure in hectopascals (hPa) </dd></dl>
 
 </div>
