@@ -35,7 +35,8 @@ Adafruit_SPA06_003 spa;
 
 void setup() {
   Serial.begin(115200);
-  while (!Serial) delay(10);     // will pause Zero, Leonardo, etc until serial console opens
+  while (!Serial)
+    delay(10);  // will pause Zero, Leonardo, etc until serial console opens
 
   Serial.println("Adafruit SPA06_003 SPI Test");
 
@@ -44,9 +45,19 @@ void setup() {
   if (!spa.begin(SPA_CS_PIN, &SPI)) {
     Serial.println("Failed to find SPA06_003 chip via hardware SPI");
     Serial.println("Check wiring and try software SPI example");
-    while (1) { delay(10); }
+    while (1) {
+      delay(10);
+    }
   }
   Serial.println("SPA06_003 Found via Hardware SPI!");
+
+  // Alternative: Software SPI (uncomment to use instead of hardware SPI)
+  // Default ATmega328 pins: MOSI=11, MISO=12, SCK=13, CS=10
+  // if (!spa.begin(10, 11, 12, 13)) {
+  //   Serial.println("Failed to find SPA06_003 chip via software SPI");
+  //   while (1) { delay(10); }
+  // }
+  // Serial.println("SPA06_003 Found via Software SPI!");
 
   Serial.println("Starting continuous measurement...");
   Serial.println("Temperature and pressure readings:");
@@ -62,7 +73,7 @@ void loop() {
     Serial.print(" °C");
   }
 
-  // Check if new pressure data is available  
+  // Check if new pressure data is available
   if (spa.isPresDataReady()) {
     float pressure = spa.readPressure();
     Serial.print(" | ");

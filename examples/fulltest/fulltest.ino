@@ -1,8 +1,8 @@
 /*
   Basic test sketch for SPA06_003 Digital Pressure Sensor
-  
+
   This sketch initializes the sensor and verifies communication.
-  
+
   Written by Limor 'ladyada' Fried with assistance from Claude Code
   for Adafruit Industries.
   MIT license, check license.txt for more information
@@ -102,23 +102,25 @@ void printOversampling(spa06_003_oversample_t prc) {
 
 void setup() {
   Serial.begin(115200);
-  while (!Serial) delay(10);
-  
+  while (!Serial)
+    delay(10);
+
   Serial.println("SPA06_003 test!");
-  
+
   if (!spa.begin()) {
     Serial.println("Could not find a valid SPA06_003 sensor, check wiring!");
-    while (1) delay(10);
+    while (1)
+      delay(10);
   }
-  
+
   Serial.println(F("SPA06_003 sensor found and initialized!"));
-  
+
   Serial.println(F("Setting measurement mode to continuous both..."));
   spa.setMeasurementMode(SPA06_003_MEAS_CONTINUOUS_BOTH);
-  
+
   Serial.print(F("Current measurement mode: "));
   spa06_003_meas_mode_t current_mode = spa.getMeasurementMode();
-  
+
   switch (current_mode) {
     case SPA06_003_MEAS_IDLE:
       Serial.println(F("Idle"));
@@ -142,33 +144,34 @@ void setup() {
       Serial.println(F("Unknown"));
       break;
   }
-  
+
   spa.enableFIFO(false);
-  
+
   spa.setInterruptPolarity(SPA06_003_INT_ACTIVE_HIGH);
-  
-  spa.setInterruptSource(false /*fifo*/, true /*temp_ready*/, true /*pres_ready*/);
-  
+
+  spa.setInterruptSource(false /*fifo*/, true /*temp_ready*/,
+                         true /*pres_ready*/);
+
   spa.setTemperatureOversampling(SPA06_003_OVERSAMPLE_8);
-  
+
   spa06_003_oversample_t temp_prc = spa.getTemperatureOversampling();
   Serial.print(F("Current temperature oversampling: "));
   printOversampling(temp_prc);
-  
+
   spa.setTemperatureMeasureRate(SPA06_003_RATE_64);
-  
+
   spa06_003_rate_t temp_rate = spa.getTemperatureMeasureRate();
   Serial.print(F("Current temperature measurement rate: "));
   printMeasureRate(temp_rate);
-  
+
   spa.setPressureMeasureRate(SPA06_003_RATE_128);
-  
+
   spa06_003_rate_t current_rate = spa.getPressureMeasureRate();
   Serial.print(F("Current pressure measurement rate: "));
   printMeasureRate(current_rate);
-  
+
   spa.setPressureOversampling(SPA06_003_OVERSAMPLE_8);
-  
+
   spa06_003_oversample_t current_prc = spa.getPressureOversampling();
   Serial.print(F("Current pressure oversampling: "));
   printOversampling(current_prc);
@@ -180,18 +183,18 @@ void loop() {
     Serial.print(spa.readTemperature());
     Serial.print(F("°C"));
   }
-  
+
   if (spa.isPresDataReady()) {
     Serial.print(F(", Pressure: "));
     Serial.print(spa.readPressure());
     Serial.print(F(" hPa"));
   }
-  
+
   uint8_t status_flags = spa.getStatusFlags();
   Serial.print(F(", Status flags: 0x"));
   Serial.print(status_flags, HEX);
   Serial.print(F(" ["));
-  
+
   if (status_flags & SPA06_003_INT_FIFO_FULL) {
     Serial.print(F("FIFO_FULL "));
   }
@@ -204,9 +207,9 @@ void loop() {
   if (status_flags == 0) {
     Serial.print(F("NONE"));
   }
-  
+
   Serial.println(F("]"));
-  
+
   Serial.print(F(", FIFO: "));
   if (spa.isFIFOEnabled()) {
     Serial.print(F("enabled "));
@@ -221,6 +224,6 @@ void loop() {
     Serial.print(F("disabled"));
   }
   Serial.println();
-  
+
   delay(1000);
 }

@@ -97,7 +97,7 @@ bool Adafruit_SPA06_003::begin(int8_t cspin, SPIClass *theSPI) {
   }
 
   spi_dev = new Adafruit_SPIDevice(cspin, SPA06_003_DEFAULT_SPIFREQ,
-                                   SPI_BITORDER_MSBFIRST, SPI_MODE0, theSPI);
+                                   SPI_BITORDER_MSBFIRST, SPI_MODE3, theSPI);
 
   if (!spi_dev->begin()) {
     return false;
@@ -126,7 +126,7 @@ bool Adafruit_SPA06_003::begin(int8_t cspin, int8_t mosipin, int8_t misopin,
 
   spi_dev = new Adafruit_SPIDevice(cspin, sckpin, misopin, mosipin,
                                    SPA06_003_DEFAULT_SPIFREQ,
-                                   SPI_BITORDER_MSBFIRST, SPI_MODE0);
+                                   SPI_BITORDER_MSBFIRST, SPI_MODE3);
 
   if (!spi_dev->begin()) {
     return false;
@@ -685,15 +685,38 @@ float Adafruit_SPA06_003::getScalingFactor(spa06_003_oversample_t oversample) {
  *  @return Temperature in degrees Celsius
  */
 float Adafruit_SPA06_003::readTemperature() {
-  // Get current temperature oversampling setting and scale factor
-  spa06_003_oversample_t oversample = getTemperatureOversampling();
-  float kT = getScalingFactor(oversample);
-
   // Read raw temperature data (24-bit 2's complement)
   uint32_t temp_raw = getTemperatureData();
 
+  // Use the calculation function
+  return calculateTemperature(temp_raw);
+}
+
+/*!
+ *  @brief  Reads compensated pressure value in hectopascals
+ *  @return Pressure in hectopascals (hPa)
+ */
+float Adafruit_SPA06_003::readPressure() {
+  // Read raw pressure and temperature data (24-bit 2's complement)
+  uint32_t pres_raw = getPressureData();
+  uint32_t temp_raw = getTemperatureData();
+
+  // Use the calculation function
+  return calculatePressure(pres_raw, temp_raw);
+}
+
+/*!
+ *  @brief  Calculates compensated temperature from raw data
+ *  @param  raw_temp Raw 24-bit temperature data
+ *  @return Temperature in degrees Celsius
+ */
+float Adafruit_SPA06_003::calculateTemperature(uint32_t raw_temp) {
+  // Get temperature oversampling setting for scaling
+  spa06_003_oversample_t oversample = getTemperatureOversampling();
+  float kT = getScalingFactor(oversample);
+
   // Convert to signed 32-bit
-  int32_t temp_raw_signed = (int32_t)temp_raw;
+  int32_t temp_raw_signed = (int32_t)raw_temp;
 
   // Calculate scaled measurement result
   float temp_raw_sc = (float)temp_raw_signed / kT;
@@ -705,21 +728,23 @@ float Adafruit_SPA06_003::readTemperature() {
 }
 
 /*!
- *  @brief  Reads compensated pressure value in hectopascals
+ *  @brief  Calculates compensated pressure from raw data
+ *  @param  raw_pres Raw 24-bit pressure data
+ *  @param  raw_temp Raw 24-bit temperature data (for compensation)
  *  @return Pressure in hectopascals (hPa)
  */
-float Adafruit_SPA06_003::readPressure() {
-  // Get scaling factors based on current oversampling settings
-  float kP = getScalingFactor(getPressureOversampling());
-  float kT = getScalingFactor(getTemperatureOversampling());
+float Adafruit_SPA06_003::calculatePressure(uint32_t raw_pres,
+                                            uint32_t raw_temp) {
+  // Get oversampling settings for scaling
+  spa06_003_oversample_t pres_oversample = getPressureOversampling();
+  spa06_003_oversample_t temp_oversample = getTemperatureOversampling();
 
-  // Read raw pressure and temperature data (24-bit 2's complement)
-  uint32_t pres_raw = getPressureData();
-  uint32_t temp_raw = getTemperatureData();
+  float kP = getScalingFactor(pres_oversample);
+  float kT = getScalingFactor(temp_oversample);
 
   // Convert to signed 32-bit
-  int32_t pres_raw_signed = (int32_t)pres_raw;
-  int32_t temp_raw_signed = (int32_t)temp_raw;
+  int32_t pres_raw_signed = (int32_t)raw_pres;
+  int32_t temp_raw_signed = (int32_t)raw_temp;
 
   // Calculate scaled measurement results
   float pres_raw_sc = (float)pres_raw_signed / kP;
@@ -733,14 +758,13 @@ float Adafruit_SPA06_003::readPressure() {
   // Calculate compensated pressure using the formula:
   // Pcomp = c00 + c10*Praw_sc + c20*Praw_sc^2 + c30*Praw_sc^3 + c40*Praw_sc^4 +
   //         Traw_sc*(c01 + c11*Praw_sc + c21*Praw_sc^2 + c31*Praw_sc^3)
-
   float pres_comp =
       (float)c00 + (float)c10 * pres_raw_sc + (float)c20 * pres_raw_sc_2 +
       (float)c30 * pres_raw_sc_3 + (float)c40 * pres_raw_sc_4 +
       temp_raw_sc * ((float)c01 + (float)c11 * pres_raw_sc +
                      (float)c21 * pres_raw_sc_2 + (float)c31 * pres_raw_sc_3);
 
-  // Convert from Pascals to hectopascals (hPa)
+  // Convert from Pa to hPa (divide by 100)
   return pres_comp / 100.0f;
 }
 

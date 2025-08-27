@@ -212,6 +212,8 @@ class Adafruit_SPA06_003 {
   bool reset();
   float readTemperature();
   float readPressure();
+  float calculateTemperature(uint32_t raw_temp);
+  float calculatePressure(uint32_t raw_pres, uint32_t raw_temp);
 
   Adafruit_Sensor *getTemperatureSensor();
   Adafruit_Sensor *getPressureSensor();
