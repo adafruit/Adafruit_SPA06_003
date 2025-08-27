@@ -32,7 +32,10 @@
 /*!
  *  @brief  Instantiates a new SPA06_003 class
  */
-Adafruit_SPA06_003::Adafruit_SPA06_003() {}
+Adafruit_SPA06_003::Adafruit_SPA06_003() {
+  i2c_dev = NULL;
+  spi_dev = NULL;
+}
 
 /*!
  *  @brief  Cleans up the SPA06_003
@@ -40,6 +43,9 @@ Adafruit_SPA06_003::Adafruit_SPA06_003() {}
 Adafruit_SPA06_003::~Adafruit_SPA06_003() {
   if (i2c_dev) {
     delete i2c_dev;
+  }
+  if (spi_dev) {
+    delete spi_dev;
   }
   if (temp_sensor) {
     delete temp_sensor;
@@ -58,6 +64,10 @@ Adafruit_SPA06_003::~Adafruit_SPA06_003() {
  *  @return True if initialization was successful, otherwise false.
  */
 bool Adafruit_SPA06_003::begin(uint8_t i2c_addr, TwoWire *wire) {
+  if (spi_dev) {
+    delete spi_dev;
+    spi_dev = NULL;
+  }
   if (i2c_dev) {
     delete i2c_dev;
   }
@@ -68,8 +78,71 @@ bool Adafruit_SPA06_003::begin(uint8_t i2c_addr, TwoWire *wire) {
     return false;
   }
 
-  Adafruit_BusIO_Register chip_id =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_ID, 1);
+  return _init();
+}
+
+/*!
+ *  @brief  Sets up the hardware and initializes hardware SPI
+ *  @param  cspin The pin to use for CS/chip select
+ *  @param  theSPI The SPI object to use, defaults to &SPI
+ *  @return True if initialization was successful, otherwise false.
+ */
+bool Adafruit_SPA06_003::begin(int8_t cspin, SPIClass *theSPI) {
+  if (i2c_dev) {
+    delete i2c_dev;
+    i2c_dev = NULL;
+  }
+  if (spi_dev) {
+    delete spi_dev;
+  }
+
+  spi_dev = new Adafruit_SPIDevice(cspin, SPA06_003_DEFAULT_SPIFREQ,
+                                   SPI_BITORDER_MSBFIRST, SPI_MODE0, theSPI);
+
+  if (!spi_dev->begin()) {
+    return false;
+  }
+
+  return _init();
+}
+
+/*!
+ *  @brief  Sets up the hardware and initializes software SPI
+ *  @param  cspin The pin to use for CS/chip select
+ *  @param  mosipin The pin to use for MOSI/data out
+ *  @param  misopin The pin to use for MISO/data in
+ *  @param  sckpin The pin to use for SCK/clock
+ *  @return True if initialization was successful, otherwise false.
+ */
+bool Adafruit_SPA06_003::begin(int8_t cspin, int8_t mosipin, int8_t misopin,
+                               int8_t sckpin) {
+  if (i2c_dev) {
+    delete i2c_dev;
+    i2c_dev = NULL;
+  }
+  if (spi_dev) {
+    delete spi_dev;
+  }
+
+  spi_dev = new Adafruit_SPIDevice(cspin, sckpin, misopin, mosipin,
+                                   SPA06_003_DEFAULT_SPIFREQ,
+                                   SPI_BITORDER_MSBFIRST, SPI_MODE0);
+
+  if (!spi_dev->begin()) {
+    return false;
+  }
+
+  return _init();
+}
+
+/*!
+ *  @brief  Common initialization code for I2C and SPI interfaces
+ *  @return True if initialization was successful, otherwise false.
+ */
+bool Adafruit_SPA06_003::_init() {
+  // Check chip ID using the combined constructor
+  Adafruit_BusIO_Register chip_id = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_ID, 1);
 
   if (chip_id.read() != 0x11) {
     return false;
@@ -116,7 +189,8 @@ bool Adafruit_SPA06_003::begin(uint8_t i2c_addr, TwoWire *wire) {
  */
 uint32_t Adafruit_SPA06_003::getPressureData() {
   Adafruit_BusIO_Register psr_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_PSR_B2, 3, MSBFIRST);
+      Adafruit_BusIO_Register(i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD,
+                              SPA06_003_REG_PSR_B2, 3, MSBFIRST);
 
   uint32_t psr_data = psr_reg.read();
 
@@ -133,7 +207,8 @@ uint32_t Adafruit_SPA06_003::getPressureData() {
  */
 uint32_t Adafruit_SPA06_003::getTemperatureData() {
   Adafruit_BusIO_Register tmp_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_TMP_B2, 3, MSBFIRST);
+      Adafruit_BusIO_Register(i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD,
+                              SPA06_003_REG_TMP_B2, 3, MSBFIRST);
 
   uint32_t tmp_data = tmp_reg.read();
 
@@ -149,8 +224,8 @@ uint32_t Adafruit_SPA06_003::getTemperatureData() {
  *  @return Current pressure measurement rate setting
  */
 spa06_003_rate_t Adafruit_SPA06_003::getPressureMeasureRate() {
-  Adafruit_BusIO_Register prs_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_PRS_CFG, 1);
+  Adafruit_BusIO_Register prs_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_PRS_CFG, 1);
   Adafruit_BusIO_RegisterBits pm_rate_bits =
       Adafruit_BusIO_RegisterBits(&prs_cfg_reg, 4, 4);
 
@@ -163,8 +238,8 @@ spa06_003_rate_t Adafruit_SPA06_003::getPressureMeasureRate() {
  *  @return True if successful, false otherwise
  */
 bool Adafruit_SPA06_003::setPressureMeasureRate(spa06_003_rate_t rate) {
-  Adafruit_BusIO_Register prs_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_PRS_CFG, 1);
+  Adafruit_BusIO_Register prs_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_PRS_CFG, 1);
   Adafruit_BusIO_RegisterBits pm_rate_bits =
       Adafruit_BusIO_RegisterBits(&prs_cfg_reg, 4, 4);
 
@@ -176,8 +251,8 @@ bool Adafruit_SPA06_003::setPressureMeasureRate(spa06_003_rate_t rate) {
  *  @return Current temperature measurement rate setting
  */
 spa06_003_rate_t Adafruit_SPA06_003::getTemperatureMeasureRate() {
-  Adafruit_BusIO_Register tmp_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_TMP_CFG, 1);
+  Adafruit_BusIO_Register tmp_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_TMP_CFG, 1);
   Adafruit_BusIO_RegisterBits tmp_rate_bits =
       Adafruit_BusIO_RegisterBits(&tmp_cfg_reg, 4, 4);
 
@@ -190,8 +265,8 @@ spa06_003_rate_t Adafruit_SPA06_003::getTemperatureMeasureRate() {
  *  @return True if successful, false otherwise
  */
 bool Adafruit_SPA06_003::setTemperatureMeasureRate(spa06_003_rate_t rate) {
-  Adafruit_BusIO_Register tmp_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_TMP_CFG, 1);
+  Adafruit_BusIO_Register tmp_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_TMP_CFG, 1);
   Adafruit_BusIO_RegisterBits tmp_rate_bits =
       Adafruit_BusIO_RegisterBits(&tmp_cfg_reg, 4, 4);
 
@@ -203,8 +278,8 @@ bool Adafruit_SPA06_003::setTemperatureMeasureRate(spa06_003_rate_t rate) {
  *  @return Current pressure oversampling rate setting
  */
 spa06_003_oversample_t Adafruit_SPA06_003::getPressureOversampling() {
-  Adafruit_BusIO_Register prs_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_PRS_CFG, 1);
+  Adafruit_BusIO_Register prs_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_PRS_CFG, 1);
   Adafruit_BusIO_RegisterBits pm_prc_bits =
       Adafruit_BusIO_RegisterBits(&prs_cfg_reg, 4, 0);
 
@@ -217,8 +292,8 @@ spa06_003_oversample_t Adafruit_SPA06_003::getPressureOversampling() {
  *  @return True if successful, false otherwise
  */
 bool Adafruit_SPA06_003::setPressureOversampling(spa06_003_oversample_t prc) {
-  Adafruit_BusIO_Register prs_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_PRS_CFG, 1);
+  Adafruit_BusIO_Register prs_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_PRS_CFG, 1);
   Adafruit_BusIO_RegisterBits pm_prc_bits =
       Adafruit_BusIO_RegisterBits(&prs_cfg_reg, 4, 0);
 
@@ -234,8 +309,8 @@ bool Adafruit_SPA06_003::setPressureOversampling(spa06_003_oversample_t prc) {
  *  @return Current temperature oversampling rate setting
  */
 spa06_003_oversample_t Adafruit_SPA06_003::getTemperatureOversampling() {
-  Adafruit_BusIO_Register tmp_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_TMP_CFG, 1);
+  Adafruit_BusIO_Register tmp_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_TMP_CFG, 1);
   Adafruit_BusIO_RegisterBits tmp_prc_bits =
       Adafruit_BusIO_RegisterBits(&tmp_cfg_reg, 4, 0);
 
@@ -249,8 +324,8 @@ spa06_003_oversample_t Adafruit_SPA06_003::getTemperatureOversampling() {
  */
 bool Adafruit_SPA06_003::setTemperatureOversampling(
     spa06_003_oversample_t prc) {
-  Adafruit_BusIO_Register tmp_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_TMP_CFG, 1);
+  Adafruit_BusIO_Register tmp_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_TMP_CFG, 1);
   Adafruit_BusIO_RegisterBits tmp_prc_bits =
       Adafruit_BusIO_RegisterBits(&tmp_cfg_reg, 4, 0);
 
@@ -266,8 +341,8 @@ bool Adafruit_SPA06_003::setTemperatureOversampling(
  *  @return True if coefficients are ready, false otherwise
  */
 bool Adafruit_SPA06_003::isCoeffReady() {
-  Adafruit_BusIO_Register meas_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_MEAS_CFG, 1);
+  Adafruit_BusIO_Register meas_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_MEAS_CFG, 1);
   Adafruit_BusIO_RegisterBits coef_rdy_bit =
       Adafruit_BusIO_RegisterBits(&meas_cfg_reg, 1, 7);
 
@@ -279,8 +354,8 @@ bool Adafruit_SPA06_003::isCoeffReady() {
  *  @return True if sensor is ready, false otherwise
  */
 bool Adafruit_SPA06_003::isSensorReady() {
-  Adafruit_BusIO_Register meas_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_MEAS_CFG, 1);
+  Adafruit_BusIO_Register meas_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_MEAS_CFG, 1);
   Adafruit_BusIO_RegisterBits sensor_rdy_bit =
       Adafruit_BusIO_RegisterBits(&meas_cfg_reg, 1, 6);
 
@@ -292,8 +367,8 @@ bool Adafruit_SPA06_003::isSensorReady() {
  *  @return True if temperature data is ready, false otherwise
  */
 bool Adafruit_SPA06_003::isTempDataReady() {
-  Adafruit_BusIO_Register meas_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_MEAS_CFG, 1);
+  Adafruit_BusIO_Register meas_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_MEAS_CFG, 1);
   Adafruit_BusIO_RegisterBits tmp_rdy_bit =
       Adafruit_BusIO_RegisterBits(&meas_cfg_reg, 1, 5);
 
@@ -305,8 +380,8 @@ bool Adafruit_SPA06_003::isTempDataReady() {
  *  @return True if pressure data is ready, false otherwise
  */
 bool Adafruit_SPA06_003::isPresDataReady() {
-  Adafruit_BusIO_Register meas_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_MEAS_CFG, 1);
+  Adafruit_BusIO_Register meas_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_MEAS_CFG, 1);
   Adafruit_BusIO_RegisterBits prs_rdy_bit =
       Adafruit_BusIO_RegisterBits(&meas_cfg_reg, 1, 4);
 
@@ -318,8 +393,8 @@ bool Adafruit_SPA06_003::isPresDataReady() {
  *  @return Current measurement mode setting
  */
 spa06_003_meas_mode_t Adafruit_SPA06_003::getMeasurementMode() {
-  Adafruit_BusIO_Register meas_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_MEAS_CFG, 1);
+  Adafruit_BusIO_Register meas_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_MEAS_CFG, 1);
   Adafruit_BusIO_RegisterBits meas_ctrl_bits =
       Adafruit_BusIO_RegisterBits(&meas_cfg_reg, 3, 0);
 
@@ -332,8 +407,8 @@ spa06_003_meas_mode_t Adafruit_SPA06_003::getMeasurementMode() {
  *  @return True if successful, false otherwise
  */
 bool Adafruit_SPA06_003::setMeasurementMode(spa06_003_meas_mode_t mode) {
-  Adafruit_BusIO_Register meas_cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_MEAS_CFG, 1);
+  Adafruit_BusIO_Register meas_cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_MEAS_CFG, 1);
   Adafruit_BusIO_RegisterBits meas_ctrl_bits =
       Adafruit_BusIO_RegisterBits(&meas_cfg_reg, 3, 0);
 
@@ -347,8 +422,8 @@ bool Adafruit_SPA06_003::setMeasurementMode(spa06_003_meas_mode_t mode) {
  */
 bool Adafruit_SPA06_003::setInterruptPolarity(
     spa06_003_int_polarity_t polarity) {
-  Adafruit_BusIO_Register cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_CFG_REG, 1);
+  Adafruit_BusIO_Register cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_CFG_REG, 1);
   Adafruit_BusIO_RegisterBits int_hl_bit =
       Adafruit_BusIO_RegisterBits(&cfg_reg, 1, 7);
 
@@ -364,8 +439,8 @@ bool Adafruit_SPA06_003::setInterruptPolarity(
  */
 bool Adafruit_SPA06_003::setInterruptSource(bool fifo, bool temp_ready,
                                             bool pres_ready) {
-  Adafruit_BusIO_Register cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_CFG_REG, 1);
+  Adafruit_BusIO_Register cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_CFG_REG, 1);
 
   Adafruit_BusIO_RegisterBits int_fifo_bit =
       Adafruit_BusIO_RegisterBits(&cfg_reg, 1, 6);
@@ -384,8 +459,8 @@ bool Adafruit_SPA06_003::setInterruptSource(bool fifo, bool temp_ready,
  *  @return True if successful, false otherwise
  */
 bool Adafruit_SPA06_003::setTempShift(bool enable) {
-  Adafruit_BusIO_Register cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_CFG_REG, 1);
+  Adafruit_BusIO_Register cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_CFG_REG, 1);
   Adafruit_BusIO_RegisterBits t_shift_bit =
       Adafruit_BusIO_RegisterBits(&cfg_reg, 1, 3);
 
@@ -398,8 +473,8 @@ bool Adafruit_SPA06_003::setTempShift(bool enable) {
  *  @return True if successful, false otherwise
  */
 bool Adafruit_SPA06_003::setPresShift(bool enable) {
-  Adafruit_BusIO_Register cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_CFG_REG, 1);
+  Adafruit_BusIO_Register cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_CFG_REG, 1);
   Adafruit_BusIO_RegisterBits p_shift_bit =
       Adafruit_BusIO_RegisterBits(&cfg_reg, 1, 2);
 
@@ -412,8 +487,8 @@ bool Adafruit_SPA06_003::setPresShift(bool enable) {
  *  @return True if successful, false otherwise
  */
 bool Adafruit_SPA06_003::enableFIFO(bool enable) {
-  Adafruit_BusIO_Register cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_CFG_REG, 1);
+  Adafruit_BusIO_Register cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_CFG_REG, 1);
   Adafruit_BusIO_RegisterBits fifo_en_bit =
       Adafruit_BusIO_RegisterBits(&cfg_reg, 1, 1);
 
@@ -425,8 +500,8 @@ bool Adafruit_SPA06_003::enableFIFO(bool enable) {
  *  @return True if FIFO is enabled, false otherwise
  */
 bool Adafruit_SPA06_003::isFIFOEnabled() {
-  Adafruit_BusIO_Register cfg_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_CFG_REG, 1);
+  Adafruit_BusIO_Register cfg_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_CFG_REG, 1);
   Adafruit_BusIO_RegisterBits fifo_en_bit =
       Adafruit_BusIO_RegisterBits(&cfg_reg, 1, 1);
 
@@ -438,8 +513,8 @@ bool Adafruit_SPA06_003::isFIFOEnabled() {
  *  @return True if FIFO is empty, false otherwise
  */
 bool Adafruit_SPA06_003::isFIFOEmpty() {
-  Adafruit_BusIO_Register fifo_sts_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_FIFO_STS, 1);
+  Adafruit_BusIO_Register fifo_sts_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_FIFO_STS, 1);
   Adafruit_BusIO_RegisterBits fifo_empty_bit =
       Adafruit_BusIO_RegisterBits(&fifo_sts_reg, 1, 0);
 
@@ -451,8 +526,8 @@ bool Adafruit_SPA06_003::isFIFOEmpty() {
  *  @return True if FIFO is full, false otherwise
  */
 bool Adafruit_SPA06_003::isFIFOFull() {
-  Adafruit_BusIO_Register fifo_sts_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_FIFO_STS, 1);
+  Adafruit_BusIO_Register fifo_sts_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_FIFO_STS, 1);
   Adafruit_BusIO_RegisterBits fifo_full_bit =
       Adafruit_BusIO_RegisterBits(&fifo_sts_reg, 1, 1);
 
@@ -464,8 +539,8 @@ bool Adafruit_SPA06_003::isFIFOFull() {
  *  @return Interrupt status register value with flags
  */
 uint8_t Adafruit_SPA06_003::getStatusFlags() {
-  Adafruit_BusIO_Register int_sts_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_INT_STS, 1);
+  Adafruit_BusIO_Register int_sts_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_INT_STS, 1);
 
   return int_sts_reg.read() & 0x07;
 }
@@ -475,8 +550,8 @@ uint8_t Adafruit_SPA06_003::getStatusFlags() {
  *  @return True if successful, false otherwise
  */
 bool Adafruit_SPA06_003::flushFIFO() {
-  Adafruit_BusIO_Register reset_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_RESET, 1);
+  Adafruit_BusIO_Register reset_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_RESET, 1);
   Adafruit_BusIO_RegisterBits fifo_flush_bit =
       Adafruit_BusIO_RegisterBits(&reset_reg, 1, 7);
 
@@ -488,8 +563,8 @@ bool Adafruit_SPA06_003::flushFIFO() {
  *  @return True if successful, false otherwise
  */
 bool Adafruit_SPA06_003::reset() {
-  Adafruit_BusIO_Register reset_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_RESET, 1);
+  Adafruit_BusIO_Register reset_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_RESET, 1);
   Adafruit_BusIO_RegisterBits soft_rst_bits =
       Adafruit_BusIO_RegisterBits(&reset_reg, 4, 0);
 
@@ -507,8 +582,8 @@ bool Adafruit_SPA06_003::readCoefficients() {
 
   // Read all coefficient data (21 bytes from 0x10 to 0x24)
   uint8_t coef_data[21];
-  Adafruit_BusIO_Register coef_reg =
-      Adafruit_BusIO_Register(i2c_dev, SPA06_003_REG_COEF, 21);
+  Adafruit_BusIO_Register coef_reg = Adafruit_BusIO_Register(
+      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, SPA06_003_REG_COEF, 21);
 
   if (!coef_reg.read(coef_data, 21)) {
     return false;

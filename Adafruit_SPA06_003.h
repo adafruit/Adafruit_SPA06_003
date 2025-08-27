@@ -49,7 +49,7 @@ class Adafruit_SPA06_003_Pressure;
 /**
  * @brief Default SPI frequency for SPA06_003
  */
-#define SPA06_003_DEFAULT_SPIFREQ 1000000 ///< 1 MHz
+#define SPA06_003_DEFAULT_SPIFREQ 1000000  ///< 1 MHz
 
 /*=========================================================================
     REGISTERS
@@ -174,14 +174,14 @@ class Adafruit_SPA06_003 {
  public:
   Adafruit_SPA06_003();
   ~Adafruit_SPA06_003();
-  
+
   // I2C initialization
   bool begin(uint8_t i2c_addr = SPA06_003_DEFAULT_ADDR, TwoWire *wire = &Wire);
-  
+
   // Hardware SPI initialization
   bool begin(int8_t cspin, SPIClass *theSPI = &SPI);
-  
-  // Software SPI initialization  
+
+  // Software SPI initialization
   bool begin(int8_t cspin, int8_t mosipin, int8_t misopin, int8_t sckpin);
   uint32_t getPressureData();
   uint32_t getTemperatureData();
