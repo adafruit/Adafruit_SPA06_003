@@ -58,41 +58,41 @@ class Adafruit_SPA06_003_Pressure;
 /**
  * @brief Pressure data registers
  */
-#define SPA06_003_REG_PSR_B2 0x00
-#define SPA06_003_REG_PSR_B1 0x01
-#define SPA06_003_REG_PSR_B0 0x02
+#define SPA06_003_REG_PSR_B2 0x00  ///< Pressure data byte 2 (MSB)
+#define SPA06_003_REG_PSR_B1 0x01  ///< Pressure data byte 1
+#define SPA06_003_REG_PSR_B0 0x02  ///< Pressure data byte 0 (LSB)
 
 /**
  * @brief Temperature data registers
  */
-#define SPA06_003_REG_TMP_B2 0x03
-#define SPA06_003_REG_TMP_B1 0x04
-#define SPA06_003_REG_TMP_B0 0x05
+#define SPA06_003_REG_TMP_B2 0x03  ///< Temperature data byte 2 (MSB)
+#define SPA06_003_REG_TMP_B1 0x04  ///< Temperature data byte 1
+#define SPA06_003_REG_TMP_B0 0x05  ///< Temperature data byte 0 (LSB)
 
 /**
  * @brief Configuration registers
  */
-#define SPA06_003_REG_PRS_CFG 0x06
-#define SPA06_003_REG_TMP_CFG 0x07
-#define SPA06_003_REG_MEAS_CFG 0x08
-#define SPA06_003_REG_CFG_REG 0x09
+#define SPA06_003_REG_PRS_CFG 0x06   ///< Pressure configuration register
+#define SPA06_003_REG_TMP_CFG 0x07   ///< Temperature configuration register
+#define SPA06_003_REG_MEAS_CFG 0x08  ///< Measurement configuration register
+#define SPA06_003_REG_CFG_REG 0x09   ///< General configuration register
 
 /**
  * @brief Status registers
  */
-#define SPA06_003_REG_INT_STS 0x0A
-#define SPA06_003_REG_FIFO_STS 0x0B
+#define SPA06_003_REG_INT_STS 0x0A   ///< Interrupt status register
+#define SPA06_003_REG_FIFO_STS 0x0B  ///< FIFO status register
 
 /**
  * @brief Control registers
  */
-#define SPA06_003_REG_RESET 0x0C
-#define SPA06_003_REG_ID 0x0D
+#define SPA06_003_REG_RESET 0x0C  ///< Reset register
+#define SPA06_003_REG_ID 0x0D     ///< Chip ID register
 
 /**
  * @brief Calibration coefficient registers
  */
-#define SPA06_003_REG_COEF 0x10
+#define SPA06_003_REG_COEF 0x10  ///< Calibration coefficients start address
 
 /*=========================================================================
     INTERRUPT STATUS FLAGS (INT_STS register 0x0A)
