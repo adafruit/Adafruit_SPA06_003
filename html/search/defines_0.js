@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['spa06_5f003_5fdefault_5faddr',['SPA06_003_DEFAULT_ADDR',['../_adafruit___s_p_a06__003_8h.html#a7e00757bac39791e303a3c9777c36c9e',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5fdefault_5fspifreq',['SPA06_003_DEFAULT_SPIFREQ',['../_adafruit___s_p_a06__003_8h.html#ab197bde566aeddf71350dfbe992f9e9e',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5fint_5ffifo_5ffull',['SPA06_003_INT_FIFO_FULL',['../_adafruit___s_p_a06__003_8h.html#a1c5e69a2fcfc597634e42802bfef9c3a',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5fint_5fprs_5frdy',['SPA06_003_INT_PRS_RDY',['../_adafruit___s_p_a06__003_8h.html#aa23aae79580d0208159bb11c01534b63',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5fint_5ftmp_5frdy',['SPA06_003_INT_TMP_RDY',['../_adafruit___s_p_a06__003_8h.html#a6fa8851a19413831b90cde80d52d64ed',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5fcfg_5freg',['SPA06_003_REG_CFG_REG',['../_adafruit___s_p_a06__003_8h.html#addf910f93adbbb55f7ddb570d593887c',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5fcoef',['SPA06_003_REG_COEF',['../_adafruit___s_p_a06__003_8h.html#a1872a0418204b55b3b0339b0ccbfda96',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5ffifo_5fsts',['SPA06_003_REG_FIFO_STS',['../_adafruit___s_p_a06__003_8h.html#af19aaf334fdf3c43bd63160f7c86eb30',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5fid',['SPA06_003_REG_ID',['../_adafruit___s_p_a06__003_8h.html#ac8d411f0715e1c94ff22192b05a8e837',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5fint_5fsts',['SPA06_003_REG_INT_STS',['../_adafruit___s_p_a06__003_8h.html#a539b15ef1869101584c4e7475affd1c8',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5fmeas_5fcfg',['SPA06_003_REG_MEAS_CFG',['../_adafruit___s_p_a06__003_8h.html#a3d8a6a3ba8a768ac066b993847cf3926',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5fprs_5fcfg',['SPA06_003_REG_PRS_CFG',['../_adafruit___s_p_a06__003_8h.html#a9d55dc7f0c5c44bd8c7064b2ae6f8cf1',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5fpsr_5fb0',['SPA06_003_REG_PSR_B0',['../_adafruit___s_p_a06__003_8h.html#abe8e5d93b58cf87fc0309144996daf7a',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5fpsr_5fb1',['SPA06_003_REG_PSR_B1',['../_adafruit___s_p_a06__003_8h.html#a90c6262497396190250b2e6628628da7',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5fpsr_5fb2',['SPA06_003_REG_PSR_B2',['../_adafruit___s_p_a06__003_8h.html#a3be3e53af4670243e1a65499b7de0dc5',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5freset',['SPA06_003_REG_RESET',['../_adafruit___s_p_a06__003_8h.html#a37e78133fcc93e0a22e4a0bf28b10d46',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5ftmp_5fb0',['SPA06_003_REG_TMP_B0',['../_adafruit___s_p_a06__003_8h.html#af0799e92c6e337fc570587dde07962bb',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5ftmp_5fb1',['SPA06_003_REG_TMP_B1',['../_adafruit___s_p_a06__003_8h.html#a1f3a33d24636d55471a87983ffc02b84',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5ftmp_5fb2',['SPA06_003_REG_TMP_B2',['../_adafruit___s_p_a06__003_8h.html#a2df4ca70be952207940987b1be4a0c2a',1,'Adafruit_SPA06_003.h']]],
+  ['spa06_5f003_5freg_5ftmp_5fcfg',['SPA06_003_REG_TMP_CFG',['../_adafruit___s_p_a06__003_8h.html#ae2db11f82c6a6d28db5829d459ab33ce',1,'Adafruit_SPA06_003.h']]]
+];
