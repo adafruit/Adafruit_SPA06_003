@@ -1,8 +1,8 @@
 /*!
- * @file Adafruit_SPA06003.h
+ * @file Adafruit_SPA06_003.h
  *
- * This is part of Adafruit's SPA06003 driver for the Arduino platform.  It is
- * designed specifically to work with the Adafruit SPA06003 breakout:
+ * This is part of Adafruit's SPA06_003 driver for the Arduino platform.  It is
+ * designed specifically to work with the Adafruit SPA06_003 breakout:
  * https://www.adafruit.com/products/xxxx
  *
  * These sensors use I2C to communicate, 2 pins (SCL+SDA) are required
@@ -24,7 +24,9 @@
 
 #include <Adafruit_BusIO_Register.h>
 #include <Adafruit_I2CDevice.h>
+#include <Adafruit_SPIDevice.h>
 #include <Adafruit_Sensor.h>
+#include <SPI.h>
 #include <Wire.h>
 
 #include "Arduino.h"
@@ -40,6 +42,14 @@ class Adafruit_SPA06_003_Pressure;
  * @brief Default I2C address for SPA06_003
  */
 #define SPA06_003_DEFAULT_ADDR 0x77
+
+/*=========================================================================
+    SPI SETTINGS
+    -----------------------------------------------------------------------*/
+/**
+ * @brief Default SPI frequency for SPA06_003
+ */
+#define SPA06_003_DEFAULT_SPIFREQ 1000000 ///< 1 MHz
 
 /*=========================================================================
     REGISTERS
@@ -164,7 +174,15 @@ class Adafruit_SPA06_003 {
  public:
   Adafruit_SPA06_003();
   ~Adafruit_SPA06_003();
+  
+  // I2C initialization
   bool begin(uint8_t i2c_addr = SPA06_003_DEFAULT_ADDR, TwoWire *wire = &Wire);
+  
+  // Hardware SPI initialization
+  bool begin(int8_t cspin, SPIClass *theSPI = &SPI);
+  
+  // Software SPI initialization  
+  bool begin(int8_t cspin, int8_t mosipin, int8_t misopin, int8_t sckpin);
   uint32_t getPressureData();
   uint32_t getTemperatureData();
   spa06_003_rate_t getPressureMeasureRate();
@@ -200,6 +218,7 @@ class Adafruit_SPA06_003 {
 
  private:
   Adafruit_I2CDevice *i2c_dev;
+  Adafruit_SPIDevice *spi_dev;
 
   // Adafruit Sensor objects
   Adafruit_SPA06_003_Temp *temp_sensor = NULL;
@@ -212,6 +231,7 @@ class Adafruit_SPA06_003 {
   int16_t c31;                      // 12-bit 2's complement
   int16_t c40;                      // 12-bit 2's complement
 
+  bool _init();
   bool readCoefficients();
   float getScalingFactor(spa06_003_oversample_t oversample);
 };
