@@ -41,7 +41,7 @@ void setup() {
 
   // Try to initialize the sensor using hardware SPI
   // CS pin = 10, default SPI instance
-  if (!spa.begin(SPA_CS_PIN)) {
+  if (!spa.begin(SPA_CS_PIN, &SPI)) {
     Serial.println("Failed to find SPA06_003 chip via hardware SPI");
     Serial.println("Check wiring and try software SPI example");
     while (1) { delay(10); }

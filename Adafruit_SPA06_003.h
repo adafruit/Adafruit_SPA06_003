@@ -179,7 +179,7 @@ class Adafruit_SPA06_003 {
   bool begin(uint8_t i2c_addr = SPA06_003_DEFAULT_ADDR, TwoWire *wire = &Wire);
 
   // Hardware SPI initialization
-  bool begin(int8_t cspin, SPIClass *theSPI = &SPI);
+  bool begin(int8_t cspin, SPIClass *theSPI);
 
   // Software SPI initialization
   bool begin(int8_t cspin, int8_t mosipin, int8_t misopin, int8_t sckpin);
