@@ -95,13 +95,14 @@ bool Adafruit_SPA06_003::begin(uint8_t i2c_addr, TwoWire *wire) {
   // Set pressure to highest oversampling (128x) and highest rate (200 Hz)
   setPressureOversampling(SPA06_003_OVERSAMPLE_128);
   setPressureMeasureRate(SPA06_003_RATE_200);
-  
-  // Set temperature to highest oversampling (128x) and highest rate (200 Hz)  
+
+  // Set temperature to highest oversampling (128x) and highest rate (200 Hz)
   setTemperatureOversampling(SPA06_003_OVERSAMPLE_128);
   setTemperatureMeasureRate(SPA06_003_RATE_200);
 
   // Enable interrupts for temperature and pressure ready
-  setInterruptSource(false, true, true);  // FIFO=false, temp_ready=true, pres_ready=true
+  setInterruptSource(false, true,
+                     true);  // FIFO=false, temp_ready=true, pres_ready=true
 
   // Set measurement mode to continuous both
   setMeasurementMode(SPA06_003_MEAS_CONTINUOUS_BOTH);
