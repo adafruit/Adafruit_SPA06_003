@@ -1,6 +1,6 @@
 # Adafruit SPA06_003 [![Build Status](https://github.com/adafruit/Adafruit_SPA06_003/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit_SPA06_003/actions)[![Documentation](https://github.com/adafruit/ci-arduino/blob/master/assets/doxygen_badge.svg)](http://adafruit.github.io/Adafruit_SPA06_003/html/index.html)
 
-<a href="https://www.adafruit.com/product/xxxx"><img src="https://cdn-shop.adafruit.com/xxxx" width="500px"><br/>
+<a href="https://www.adafruit.com/product/6420"><img src="assets/board.jpg" width="500px"><br/>
 <i>Adafruit SPA06_003 Breakout</i></a>
 
 This is the Adafruit SPA06_003 Digital Pressure Sensor library for Arduino.
